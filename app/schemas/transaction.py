@@ -27,3 +27,4 @@ class Transaction(BaseModel):
     is_fraud: bool
 
     timestamp: datetime
+    

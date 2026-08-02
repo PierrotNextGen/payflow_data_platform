@@ -1,50 +1,184 @@
+import random
+
 MERCHANTS = [
     {
         "id": "MER-1001",
-        "name": "Takealot",
-        "category": "E-Commerce",
-        "settlement_bank": "Standard Bank"
+        "name": "Checkers",
+        "category": "Retail",
+        "average_basket": 850,
+        "risk_level": "LOW",
+        "opening_hour": 8,
+        "closing_hour": 21,
+        "province": "Gauteng",
+        "city": "Johannesburg",
+        "settlement_bank": "Absa"
     },
     {
         "id": "MER-1002",
-        "name": "Checkers",
+        "name": "Pick n Pay",
         "category": "Retail",
-        "settlement_bank": "Absa"
+        "average_basket": 900,
+        "risk_level": "LOW",
+        "opening_hour": 8,
+        "closing_hour": 21,
+        "province": "Western Cape",
+        "city": "Cape Town",
+        "settlement_bank": "FNB"
     },
     {
         "id": "MER-1003",
         "name": "Woolworths",
         "category": "Retail",
-        "settlement_bank": "Nedbank"
-    },
-    {
-        "id": "MER-1004",
-        "name": "Pick n Pay",
-        "category": "Retail",
-        "settlement_bank": "FNB"
-    },
-    {
-        "id": "MER-1005",
-        "name": "Mr Price",
-        "category": "Fashion",
+        "average_basket": 1200,
+        "risk_level": "LOW",
+        "opening_hour": 8,
+        "closing_hour": 20,
+        "province": "Gauteng",
+        "city": "Pretoria",
         "settlement_bank": "Standard Bank"
     },
     {
-        "id": "MER-1006",
-        "name": "Uber SA",
-        "category": "Transport",
+        "id": "MER-1004",
+        "name": "Takealot",
+        "category": "E-Commerce",
+        "average_basket": 1800,
+        "risk_level": "MEDIUM",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "Western Cape",
+        "city": "Cape Town",
+        "settlement_bank": "Nedbank"
+    },
+    {
+        "id": "MER-1005",
+        "name": "Amazon SA",
+        "category": "E-Commerce",
+        "average_basket": 2200,
+        "risk_level": "MEDIUM",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "Gauteng",
+        "city": "Johannesburg",
         "settlement_bank": "Absa"
     },
     {
+        "id": "MER-1006",
+        "name": "Uber",
+        "category": "Transport",
+        "average_basket": 180,
+        "risk_level": "LOW",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "Gauteng",
+        "city": "Johannesburg",
+        "settlement_bank": "FNB"
+    },
+    {
         "id": "MER-1007",
-        "name": "Dis-Chem",
-        "category": "Pharmacy",
+        "name": "Bolt",
+        "category": "Transport",
+        "average_basket": 160,
+        "risk_level": "LOW",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "KwaZulu-Natal",
+        "city": "Durban",
         "settlement_bank": "Capitec"
     },
     {
         "id": "MER-1008",
-        "name": "Clicks",
+        "name": "Engen",
+        "category": "Fuel",
+        "average_basket": 950,
+        "risk_level": "LOW",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "Eastern Cape",
+        "city": "Gqeberha",
+        "settlement_bank": "Standard Bank"
+    },
+    {
+        "id": "MER-1009",
+        "name": "Shell",
+        "category": "Fuel",
+        "average_basket": 1100,
+        "risk_level": "LOW",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "Western Cape",
+        "city": "Cape Town",
+        "settlement_bank": "Absa"
+    },
+    {
+        "id": "MER-1010",
+        "name": "Dis-Chem",
         "category": "Pharmacy",
+        "average_basket": 450,
+        "risk_level": "LOW",
+        "opening_hour": 8,
+        "closing_hour": 20,
+        "province": "Gauteng",
+        "city": "Johannesburg",
         "settlement_bank": "Nedbank"
+    },
+    {
+        "id": "MER-1011",
+        "name": "Game",
+        "category": "Electronics",
+        "average_basket": 3500,
+        "risk_level": "MEDIUM",
+        "opening_hour": 9,
+        "closing_hour": 19,
+        "province": "Gauteng",
+        "city": "Pretoria",
+        "settlement_bank": "FNB"
+    },
+    {
+        "id": "MER-1012",
+        "name": "Makro",
+        "category": "Wholesale",
+        "average_basket": 4200,
+        "risk_level": "MEDIUM",
+        "opening_hour": 8,
+        "closing_hour": 18,
+        "province": "Western Cape",
+        "city": "Cape Town",
+        "settlement_bank": "Standard Bank"
+    },
+    {
+        "id": "MER-1013",
+        "name": "Flight Centre",
+        "category": "Travel",
+        "average_basket": 8500,
+        "risk_level": "HIGH",
+        "opening_hour": 8,
+        "closing_hour": 18,
+        "province": "Gauteng",
+        "city": "Johannesburg",
+        "settlement_bank": "Absa"
+    },
+    {
+        "id": "MER-1014",
+        "name": "Luxury Watches SA",
+        "category": "Luxury",
+        "average_basket": 25000,
+        "risk_level": "HIGH",
+        "opening_hour": 9,
+        "closing_hour": 17,
+        "province": "Western Cape",
+        "city": "Cape Town",
+        "settlement_bank": "Nedbank"
+    },
+    {
+        "id": "MER-1015",
+        "name": "SunBet",
+        "category": "Gambling",
+        "average_basket": 3000,
+        "risk_level": "HIGH",
+        "opening_hour": 0,
+        "closing_hour": 24,
+        "province": "Gauteng",
+        "city": "Johannesburg",
+        "settlement_bank": "Capitec"
     }
 ]

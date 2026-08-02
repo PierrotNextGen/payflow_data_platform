@@ -11,8 +11,93 @@ def generate_transaction():
     customer = random.choice(CUSTOMERS)
     merchant = random.choice(MERCHANTS)
 
-    fraud_score = random.randint(0, 100)
-    is_fraud = fraud_score >= 90
+    # -----------------------------
+    # Customer spending profile
+    # -----------------------------
+    average = customer["average_transaction"]
+
+    if customer["segment"] == "Premium":
+        average *= 2
+    elif customer["segment"] == "Business":
+        average *= 3
+
+    # -----------------------------
+    # Merchant average basket
+    # -----------------------------
+    merchant_average = merchant["average_basket"]
+
+    amount = round(
+        random.uniform(
+            min(average, merchant_average) * 0.8,
+            max(average, merchant_average) * 1.5
+        ),
+        2
+    )
+
+    # -----------------------------
+    # Preferred payment method
+    # 90% of the time the customer
+    # uses their preferred card
+    # -----------------------------
+    payment_method = customer["preferred_payment"]
+
+    if random.random() < 0.10:
+        payment_method = (
+            "Visa"
+            if payment_method == "Mastercard"
+            else "Mastercard"
+        )
+
+    # -----------------------------
+    # Transaction status
+    # -----------------------------
+    status = random.choices(
+        ["SUCCESS", "FAILED"],
+        weights=[95, 5]
+    )[0]
+
+    # -----------------------------
+    # Gateway
+    # -----------------------------
+    gateway = payment_method
+
+    # -----------------------------
+    # Rule-Based Fraud Detection
+    # -----------------------------
+    fraud_score = 0
+
+    # Large transaction
+    if amount > average * 2:
+        fraud_score += 30
+
+    # High-risk merchant
+    if merchant["risk_level"] == "HIGH":
+        fraud_score += 25
+
+    # Medium-risk merchant
+    elif merchant["risk_level"] == "MEDIUM":
+        fraud_score += 10
+
+    # Customer risk
+    if customer["risk_rating"] == "HIGH":
+        fraud_score += 25
+    elif customer["risk_rating"] == "MEDIUM":
+        fraud_score += 10
+
+    # Different payment method
+    if payment_method != customer["preferred_payment"]:
+        fraud_score += 15
+
+    # Failed payment
+    if status == "FAILED":
+        fraud_score += 5
+
+    # Small randomness
+    fraud_score += random.randint(0, 10)
+
+    fraud_score = min(fraud_score, 100)
+
+    is_fraud = fraud_score >= 50
 
     return Transaction(
         transaction_id=f"TXN-{random.randint(100000,999999)}",
@@ -26,14 +111,14 @@ def generate_transaction():
         merchant_category=merchant["category"],
         settlement_bank=merchant["settlement_bank"],
 
-        amount=round(random.uniform(20, 5000), 2),
+        amount=amount,
         currency="ZAR",
 
-        payment_method=random.choice(["Visa", "Mastercard"]),
+        payment_method=payment_method,
 
-        status=random.choice(["SUCCESS", "FAILED"]),
+        status=status,
 
-        gateway=random.choice(["Visa", "Mastercard"]),
+        gateway=gateway,
 
         fraud_score=fraud_score,
         is_fraud=is_fraud,
