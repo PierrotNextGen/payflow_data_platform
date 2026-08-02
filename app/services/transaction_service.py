@@ -11,9 +11,9 @@ def generate_transaction():
     customer = random.choice(CUSTOMERS)
     merchant = random.choice(MERCHANTS)
 
-    # -----------------------------
+
     # Customer spending profile
-    # -----------------------------
+    
     average = customer["average_transaction"]
 
     if customer["segment"] == "Premium":
@@ -100,28 +100,37 @@ def generate_transaction():
     is_fraud = fraud_score >= 50
 
     return Transaction(
-        transaction_id=f"TXN-{random.randint(100000,999999)}",
+    transaction_id=f"TXN-{random.randint(100000,999999)}",
 
-        customer_id=customer["id"],
-        customer_name=f"{customer['first_name']} {customer['last_name']}",
-        issuing_bank=customer["bank"],
+    # Customer
+    customer_id=customer["id"],
+    customer_name=f"{customer['first_name']} {customer['last_name']}",
+    customer_age=customer["age"],
+    customer_occupation=customer["occupation"],
+    customer_segment=customer["segment"],
+    customer_city=customer["city"],
+    customer_province=customer["province"],
+    issuing_bank=customer["bank"],
 
-        merchant_id=merchant["id"],
-        merchant_name=merchant["name"],
-        merchant_category=merchant["category"],
-        settlement_bank=merchant["settlement_bank"],
+    # Merchant
+    merchant_id=merchant["id"],
+    merchant_name=merchant["name"],
+    merchant_category=merchant["category"],
+    merchant_city=merchant["city"],
+    merchant_province=merchant["province"],
+    settlement_bank=merchant["settlement_bank"],
 
-        amount=amount,
-        currency="ZAR",
+    # Transaction
+    amount=amount,
+    currency="ZAR",
+    payment_method=payment_method,
+    status=status,
+    gateway=gateway,
 
-        payment_method=payment_method,
+    # Fraud
+    fraud_score=fraud_score,
+    is_fraud=is_fraud,
 
-        status=status,
-
-        gateway=gateway,
-
-        fraud_score=fraud_score,
-        is_fraud=is_fraud,
-
-        timestamp=datetime.now()
-    )
+    # Timestamp
+    timestamp=datetime.now()
+)
