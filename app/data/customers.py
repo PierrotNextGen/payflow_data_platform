@@ -1,22 +1,32 @@
 CUSTOMERS = [
     {
-        "id": "CUS-10001",
-        "name": "Alice"
+        "id": "CUS-1001",
+        "first_name": "Sipho",
+        "last_name": "Dlamini",
+        "bank": "Capitec"
     },
     {
-        "id": "CUS-10002",
-        "name": "Bob"
+        "id": "CUS-1002",
+        "first_name": "Thandi",
+        "last_name": "Nkosi",
+        "bank": "FNB"
     },
     {
-        "id": "CUS-10003",
-        "name": "Charlie"
+        "id": "CUS-1003",
+        "first_name": "Lebo",
+        "last_name": "Mokoena",
+        "bank": "Standard Bank"
     },
     {
-        "id": "CUS-10004",
-        "name": "David"
+        "id": "CUS-1004",
+        "first_name": "Aisha",
+        "last_name": "Patel",
+        "bank": "Absa"
     },
     {
-        "id": "CUS-10005",
-        "name": "Emma"
+        "id": "CUS-1005",
+        "first_name": "Michael",
+        "last_name": "Naidoo",
+        "bank": "Nedbank"
     }
 ]
