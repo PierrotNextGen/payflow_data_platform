@@ -4,6 +4,7 @@ from datetime import datetime
 from app.schemas.transaction import Transaction
 from app.data.customers import CUSTOMERS
 from app.data.merchants import MERCHANTS
+from app.database.repository import save_transaction
 
 
 def generate_transaction():
@@ -11,9 +12,9 @@ def generate_transaction():
     customer = random.choice(CUSTOMERS)
     merchant = random.choice(MERCHANTS)
 
-
+    # -----------------------------
     # Customer spending profile
-    
+    # -----------------------------
     average = customer["average_transaction"]
 
     if customer["segment"] == "Premium":
@@ -36,8 +37,6 @@ def generate_transaction():
 
     # -----------------------------
     # Preferred payment method
-    # 90% of the time the customer
-    # uses their preferred card
     # -----------------------------
     payment_method = customer["preferred_payment"]
 
@@ -99,38 +98,43 @@ def generate_transaction():
 
     is_fraud = fraud_score >= 50
 
-    return Transaction(
-    transaction_id=f"TXN-{random.randint(100000,999999)}",
+    transaction = Transaction(
+        transaction_id=f"TXN-{random.randint(100000,999999)}",
 
-    # Customer
-    customer_id=customer["id"],
-    customer_name=f"{customer['first_name']} {customer['last_name']}",
-    customer_age=customer["age"],
-    customer_occupation=customer["occupation"],
-    customer_segment=customer["segment"],
-    customer_city=customer["city"],
-    customer_province=customer["province"],
-    issuing_bank=customer["bank"],
+        # Customer
+        customer_id=customer["id"],
+        customer_name=f"{customer['first_name']} {customer['last_name']}",
+        customer_age=customer["age"],
+        customer_occupation=customer["occupation"],
+        customer_segment=customer["segment"],
+        customer_city=customer["city"],
+        customer_province=customer["province"],
+        issuing_bank=customer["bank"],
 
-    # Merchant
-    merchant_id=merchant["id"],
-    merchant_name=merchant["name"],
-    merchant_category=merchant["category"],
-    merchant_city=merchant["city"],
-    merchant_province=merchant["province"],
-    settlement_bank=merchant["settlement_bank"],
+        # Merchant
+        merchant_id=merchant["id"],
+        merchant_name=merchant["name"],
+        merchant_category=merchant["category"],
+        merchant_city=merchant["city"],
+        merchant_province=merchant["province"],
+        settlement_bank=merchant["settlement_bank"],
 
-    # Transaction
-    amount=amount,
-    currency="ZAR",
-    payment_method=payment_method,
-    status=status,
-    gateway=gateway,
+        # Transaction
+        amount=amount,
+        currency="ZAR",
+        payment_method=payment_method,
+        status=status,
+        gateway=gateway,
 
-    # Fraud
-    fraud_score=fraud_score,
-    is_fraud=is_fraud,
+        # Fraud
+        fraud_score=fraud_score,
+        is_fraud=is_fraud,
 
-    # Timestamp
-    timestamp=datetime.now()
-)
+        # Timestamp
+        timestamp=datetime.now()
+    )
+
+    # Save to PostgreSQL
+    save_transaction(transaction)
+
+    return transaction
