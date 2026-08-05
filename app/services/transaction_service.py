@@ -4,7 +4,6 @@ from datetime import datetime
 from app.schemas.transaction import Transaction
 from app.data.customers import CUSTOMERS
 from app.data.merchants import MERCHANTS
-from app.database.repository import save_transaction
 
 
 def generate_transaction():
@@ -65,40 +64,31 @@ def generate_transaction():
     # -----------------------------
     fraud_score = 0
 
-    # Large transaction
     if amount > average * 2:
         fraud_score += 30
 
-    # High-risk merchant
     if merchant["risk_level"] == "HIGH":
         fraud_score += 25
-
-    # Medium-risk merchant
     elif merchant["risk_level"] == "MEDIUM":
         fraud_score += 10
 
-    # Customer risk
     if customer["risk_rating"] == "HIGH":
         fraud_score += 25
     elif customer["risk_rating"] == "MEDIUM":
         fraud_score += 10
 
-    # Different payment method
     if payment_method != customer["preferred_payment"]:
         fraud_score += 15
 
-    # Failed payment
     if status == "FAILED":
         fraud_score += 5
 
-    # Small randomness
     fraud_score += random.randint(0, 10)
-
     fraud_score = min(fraud_score, 100)
 
     is_fraud = fraud_score >= 50
 
-    transaction = Transaction(
+    return Transaction(
         transaction_id=f"TXN-{random.randint(100000,999999)}",
 
         # Customer
@@ -133,8 +123,10 @@ def generate_transaction():
         # Timestamp
         timestamp=datetime.now()
     )
+def generate_transactions(count: int):
+    transactions = []
 
-    # Save to PostgreSQL
-    save_transaction(transaction)
+    for _ in range(count):
+        transactions.append(generate_transaction())
 
-    return transaction
+    return transactions
