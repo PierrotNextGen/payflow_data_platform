@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+import uuid
 
 from app.schemas.transaction import Transaction
 from app.data.customers import CUSTOMERS
@@ -89,7 +90,7 @@ def generate_transaction():
     is_fraud = fraud_score >= 50
 
     return Transaction(
-        transaction_id=f"TXN-{random.randint(100000,999999)}",
+        transaction_id=f"TXN-{uuid.uuid4().hex[:12].upper()}",
 
         # Customer
         customer_id=customer["id"],
