@@ -1,7 +1,8 @@
 import random
-from datetime import datetime
 import uuid
+from datetime import datetime
 
+from app.kafka.producer import publish_transaction
 from app.schemas.transaction import Transaction
 from app.data.customers import CUSTOMERS
 from app.data.merchants import MERCHANTS
@@ -89,7 +90,7 @@ def generate_transaction():
 
     is_fraud = fraud_score >= 50
 
-    return Transaction(
+    transaction = Transaction(
         transaction_id=f"TXN-{uuid.uuid4().hex[:12].upper()}",
 
         # Customer
@@ -124,7 +125,15 @@ def generate_transaction():
         # Timestamp
         timestamp=datetime.now()
     )
+
+    # Publish transaction to Kafka
+    publish_transaction(transaction)
+
+    return transaction
+
+
 def generate_transactions(count: int):
+
     transactions = []
 
     for _ in range(count):
