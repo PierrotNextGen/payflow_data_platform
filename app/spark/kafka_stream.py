@@ -80,13 +80,15 @@ transactions_df = (
 
 
 # Print transactions to the terminal
+# Write transactions to the data lake as Parquet
+
 query = (
     transactions_df
     .writeStream
-    .format("console")
+    .format("parquet")
     .outputMode("append")
-    .option("truncate", "false")
-    .option("numRows", 20)
+    .option("path", "/opt/spark-data/transactions")
+    .option("checkpointLocation", "/opt/spark-checkpoints/transactions")
     .start()
 )
 

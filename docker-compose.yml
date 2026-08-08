@@ -52,6 +52,7 @@ services:
       - ./app/spark:/opt/spark-apps
       - ./data:/opt/spark-data
       - ./spark-ivy:/opt/spark-ivy
+      - ./spark-checkpoints:/opt/spark-checkpoints
 
   
 

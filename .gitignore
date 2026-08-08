@@ -1,12 +1,17 @@
-# Virtual environment
+# Python
 .venv/
-
-# Python cache
 __pycache__/
 *.pyc
 
-# VS Code
-.vscode/
-
-# Environment files
+# Environment
 .env
+
+# Data lake
+data/
+
+# Spark
+spark-checkpoints/
+spark-ivy/
+
+# IDE
+.vscode/
