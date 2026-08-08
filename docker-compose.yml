@@ -9,18 +9,55 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+      KAFKA_LISTENERS: PLAINTEXT://:9092,INTERNAL://:29092,CONTROLLER://:9093
+
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
     healthcheck:
-      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list"]
+      test:
+        [
+          "CMD",
+          "/opt/kafka/bin/kafka-topics.sh",
+          "--bootstrap-server",
+          "localhost:9092",
+          "--list"
+        ]
       interval: 10s
       timeout: 10s
       retries: 10
+
+  spark:
+    image: apache/spark:4.0.1
+    container_name: payflow-spark
+
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+    volumes:
+      - ./app/spark:/opt/spark-apps
+      - ./data:/opt/spark-data
+      - ./spark-ivy:/opt/spark-ivy
+
+  
+
+    command: >
+      /opt/spark/bin/spark-submit
+      --master local[*]
+      --conf spark.jars.ivy=/opt/spark-ivy
+      --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1
+      /opt/spark-apps/kafka_stream.py
