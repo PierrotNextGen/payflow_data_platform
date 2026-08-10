@@ -3,10 +3,10 @@ from psycopg.rows import dict_row
 
 DB_CONFIG = {
     "host": "localhost",
-    "port": 5432,
+    "port": 5433,
     "dbname": "payflow",
-    "user": "postgres",
-    "password": "Munga@2001"
+    "user": "payflow",
+    "password": "postgres"
 }
 
 

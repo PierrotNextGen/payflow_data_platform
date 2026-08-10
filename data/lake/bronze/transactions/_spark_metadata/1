@@ -1,0 +1,2 @@
+v1
+{"path":"file:///opt/spark-data/lake/bronze/transactions/part-00000-b91f3c3e-a782-4836-8c30-f02a4111e407-c000.snappy.parquet","size":7236,"isDir":false,"modificationTime":1786397813630,"blockReplication":1,"blockSize":33554432,"action":"add"}

@@ -62,3 +62,28 @@ services:
       --conf spark.jars.ivy=/opt/spark-ivy
       --packages org.apache.spark:spark-sql-kafka-0-10_2.13:4.0.1
       /opt/spark-apps/kafka_stream.py
+
+    
+  postgres:
+    image: postgres:18
+    container_name: payflow-postgres
+
+    environment:
+      POSTGRES_DB: payflow
+      POSTGRES_USER: payflow
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payflow -d payflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
