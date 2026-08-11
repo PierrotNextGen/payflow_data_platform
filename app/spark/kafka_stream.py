@@ -10,8 +10,18 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+
+# ==================================================
+# Kafka Configuration
+# ==================================================
+
 KAFKA_BOOTSTRAP_SERVERS = "kafka:29092"
 KAFKA_TOPIC = "transactions"
+
+
+# ==================================================
+# Spark Session
+# ==================================================
 
 spark = (
     SparkSession.builder
@@ -22,6 +32,10 @@ spark = (
 
 spark.sparkContext.setLogLevel("WARN")
 
+
+# ==================================================
+# Transaction Schema
+# ==================================================
 
 transaction_schema = StructType([
     StructField("transaction_id", StringType(), True),
@@ -55,9 +69,9 @@ transaction_schema = StructType([
 ])
 
 
-# --------------------------------------------------
-# Read transactions continuously from Kafka
-# --------------------------------------------------
+# ==================================================
+# Read Transactions Continuously From Kafka
+# ==================================================
 
 kafka_df = (
     spark.readStream
@@ -70,17 +84,21 @@ kafka_df = (
         "subscribe",
         KAFKA_TOPIC
     )
-    
-    .option("startingOffsets", "earliest")
-    .option("failOnDataLoss", "false")
-     
+    .option(
+        "startingOffsets",
+        "earliest"
+    )
+    .option(
+        "failOnDataLoss",
+        "false"
+    )
     .load()
 )
 
 
-# --------------------------------------------------
-# Convert Kafka binary value to JSON
-# --------------------------------------------------
+# ==================================================
+# Convert Kafka Binary Value To JSON
+# ==================================================
 
 transactions_df = (
     kafka_df
@@ -97,47 +115,50 @@ transactions_df = (
 )
 
 
-<<<<<<< HEAD
-# Print transactions to the terminal
-# Write transactions to the data lake as Parquet
-
-query = (
-=======
-# --------------------------------------------------
+# ==================================================
 # Bronze Data Lake
-# --------------------------------------------------
+# ==================================================
 
 bronze_path = "/opt/spark-data/lake/bronze/transactions"
 
+bronze_checkpoint = (
+    "/opt/spark-data/checkpoints/bronze_transactions"
+)
+
+
 bronze_query = (
->>>>>>> 24e422c (Build Kafka consumers for PostgreSQL and data lake)
     transactions_df
     .writeStream
     .format("parquet")
     .outputMode("append")
-<<<<<<< HEAD
-    .option("path", "/opt/spark-data/transactions")
-    .option("checkpointLocation", "/opt/spark-checkpoints/transactions")
-=======
     .option(
         "path",
         bronze_path
     )
     .option(
         "checkpointLocation",
-        "/opt/spark-data/checkpoints/bronze_transactions"
+        bronze_checkpoint
     )
->>>>>>> 24e422c (Build Kafka consumers for PostgreSQL and data lake)
     .start()
 )
 
 
+# ==================================================
+# Startup Information
+# ==================================================
+
 print("========================================")
 print("PayFlow Spark Streaming Started")
 print("========================================")
+print("Kafka broker:", KAFKA_BOOTSTRAP_SERVERS)
 print("Kafka topic:", KAFKA_TOPIC)
 print("Bronze data lake:", bronze_path)
+print("Checkpoint:", bronze_checkpoint)
 print("========================================")
 
+
+# ==================================================
+# Keep Streaming Application Running
+# ==================================================
 
 bronze_query.awaitTermination()
