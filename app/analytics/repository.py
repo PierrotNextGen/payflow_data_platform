@@ -1,164 +1,198 @@
+import psycopg
+
 from app.database.connection import get_connection
+from app.exceptions import AnalyticsDatabaseError
 
 
-def get_summary():
+def get_daily_transactions():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
 
-    conn = get_connection()
-    cur = conn.cursor()
+                cur.execute("""
+                    SELECT
+                        currency,
+                        transaction_count,
+                        total_transaction_amount,
+                        average_transaction_amount,
+                        maximum_transaction_amount,
+                        minimum_transaction_amount,
+                        successful_transactions,
+                        failed_transactions,
+                        fraudulent_transactions,
+                        average_fraud_score,
+                        transaction_date
+                    FROM daily_transactions
+                    ORDER BY transaction_date DESC;
+                """)
 
-    cur.execute("""
-        SELECT
-            COUNT(*) AS total_transactions,
-            COALESCE(SUM(amount), 0) AS total_volume,
-            COALESCE(AVG(amount), 0) AS average_transaction,
-            SUM(CASE WHEN is_fraud THEN 1 ELSE 0 END) AS fraud_transactions
-        FROM transactions;
-    """)
+                rows = cur.fetchall()
 
-    row = cur.fetchone()
+        results = []
 
-    cur.close()
-    conn.close()
+        for row in rows:
+            results.append({
+                "currency": row["currency"],
+                "transaction_count": int(row["transaction_count"]),
+                "total_transaction_amount": float(
+                    row["total_transaction_amount"]
+                ),
+                "average_transaction_amount": float(
+                    row["average_transaction_amount"]
+                ),
+                "maximum_transaction_amount": float(
+                    row["maximum_transaction_amount"]
+                ),
+                "minimum_transaction_amount": float(
+                    row["minimum_transaction_amount"]
+                ),
+                "successful_transactions": int(
+                    row["successful_transactions"]
+                ),
+                "failed_transactions": int(
+                    row["failed_transactions"]
+                ),
+                "fraudulent_transactions": int(
+                    row["fraudulent_transactions"]
+                ),
+                "average_fraud_score": float(
+                    row["average_fraud_score"]
+                ),
+                "transaction_date": row["transaction_date"]
+            })
 
-    return {
-        "total_transactions": int(row["total_transactions"]),
-        "total_volume": float(row["total_volume"]),
-        "average_transaction": round(float(row["average_transaction"]), 2),
-        "fraud_transactions": int(row["fraud_transactions"] or 0)
-    }
+        return results
 
-def get_bank_summary():
+    except psycopg.Error as exc:
+        raise AnalyticsDatabaseError(
+            "Unable to retrieve daily transaction analytics."
+        ) from exc
 
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-        SELECT
-            issuing_bank,
-            COUNT(*) AS transactions,
-            COALESCE(SUM(amount), 0) AS total_volume,
-            COALESCE(AVG(amount), 0) AS average_amount
-        FROM transactions
-        GROUP BY issuing_bank
-        ORDER BY total_volume DESC;
-    """)
-
-    rows = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    results = []
-
-    for row in rows:
-        results.append({
-            "issuing_bank": row["issuing_bank"],
-            "transactions": row["transactions"],
-            "total_volume": float(row["total_volume"]),
-            "average_amount": round(float(row["average_amount"]), 2)
-        })
-
-    return results
 
 def get_merchant_summary():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
 
-    conn = get_connection()
-    cur = conn.cursor()
+                cur.execute("""
+                    SELECT
+                        merchant_id,
+                        merchant_name,
+                        merchant_category,
+                        merchant_city,
+                        merchant_province,
+                        currency,
+                        transaction_count,
+                        total_transaction_amount,
+                        average_transaction_amount,
+                        successful_transactions,
+                        failed_transactions,
+                        fraudulent_transactions,
+                        average_fraud_score,
+                        maximum_transaction_amount
+                    FROM merchant_performance
+                    ORDER BY total_transaction_amount DESC;
+                """)
 
-    cur.execute("""
-        SELECT
-            merchant_name,
-            merchant_category,
-            COUNT(*) AS transactions,
-            COALESCE(SUM(amount), 0) AS total_volume,
-            COALESCE(AVG(amount), 0) AS average_amount
-        FROM transactions
-        GROUP BY merchant_name, merchant_category
-        ORDER BY total_volume DESC;
-    """)
+                rows = cur.fetchall()
 
-    rows = cur.fetchall()
+        results = []
 
-    cur.close()
-    conn.close()
+        for row in rows:
+            results.append({
+                "merchant_id": row["merchant_id"],
+                "merchant_name": row["merchant_name"],
+                "merchant_category": row["merchant_category"],
+                "merchant_city": row["merchant_city"],
+                "merchant_province": row["merchant_province"],
+                "currency": row["currency"],
+                "transaction_count": int(row["transaction_count"]),
+                "total_transaction_amount": float(
+                    row["total_transaction_amount"]
+                ),
+                "average_transaction_amount": float(
+                    row["average_transaction_amount"]
+                ),
+                "successful_transactions": int(
+                    row["successful_transactions"]
+                ),
+                "failed_transactions": int(
+                    row["failed_transactions"]
+                ),
+                "fraudulent_transactions": int(
+                    row["fraudulent_transactions"]
+                ),
+                "average_fraud_score": float(
+                    row["average_fraud_score"]
+                ),
+                "maximum_transaction_amount": float(
+                    row["maximum_transaction_amount"]
+                )
+            })
 
-    results = []
+        return results
 
-    for row in rows:
-        results.append({
-            "merchant_name": row["merchant_name"],
-            "merchant_category": row["merchant_category"],
-            "transactions": row["transactions"],
-            "total_volume": float(row["total_volume"]),
-            "average_amount": round(float(row["average_amount"]), 2)
-        })
+    except psycopg.Error as exc:
+        raise AnalyticsDatabaseError(
+            "Unable to retrieve merchant performance analytics."
+        ) from exc
 
-    return results
 
 def get_fraud_summary():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
 
-    conn = get_connection()
-    cur = conn.cursor()
+                cur.execute("""
+                    SELECT
+                        merchant_category,
+                        payment_method,
+                        fraud_status,
+                        currency,
+                        transaction_count,
+                        total_transaction_amount,
+                        average_transaction_amount,
+                        average_fraud_score,
+                        maximum_fraud_score,
+                        minimum_fraud_score,
+                        transaction_date
+                    FROM fraud_analysis
+                    ORDER BY transaction_date DESC,
+                             total_transaction_amount DESC;
+                """)
 
-    cur.execute("""
-        SELECT
-            COUNT(*) AS total_transactions,
-            SUM(CASE WHEN is_fraud THEN 1 ELSE 0 END) AS fraud_transactions,
-            COALESCE(SUM(CASE WHEN is_fraud THEN amount ELSE 0 END), 0) AS fraud_volume,
-            COALESCE(AVG(CASE WHEN is_fraud THEN amount END), 0) AS average_fraud_amount
-        FROM transactions;
-    """)
+                rows = cur.fetchall()
 
-    row = cur.fetchone()
+        results = []
 
-    cur.close()
-    conn.close()
+        for row in rows:
+            results.append({
+                "merchant_category": row["merchant_category"],
+                "payment_method": row["payment_method"],
+                "fraud_status": row["fraud_status"],
+                "currency": row["currency"],
+                "transaction_count": int(row["transaction_count"]),
+                "total_transaction_amount": float(
+                    row["total_transaction_amount"]
+                ),
+                "average_transaction_amount": float(
+                    row["average_transaction_amount"]
+                ),
+                "average_fraud_score": float(
+                    row["average_fraud_score"]
+                ),
+                "maximum_fraud_score": float(
+                    row["maximum_fraud_score"]
+                ),
+                "minimum_fraud_score": float(
+                    row["minimum_fraud_score"]
+                ),
+                "transaction_date": row["transaction_date"]
+            })
 
-    total = row["total_transactions"]
-    fraud = row["fraud_transactions"] or 0
+        return results
 
-    fraud_rate = 0
-
-    if total > 0:
-        fraud_rate = round((fraud / total) * 100, 2)
-
-    return {
-        "total_transactions": total,
-        "fraud_transactions": fraud,
-        "fraud_rate": fraud_rate,
-        "fraud_volume": float(row["fraud_volume"]),
-        "average_fraud_amount": round(float(row["average_fraud_amount"]), 2)
-    }
-
-def get_province_summary():
-
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-        SELECT
-            customer_province,
-            COUNT(*) AS transactions,
-            COALESCE(SUM(amount), 0) AS total_volume,
-            COALESCE(AVG(amount), 0) AS average_amount
-        FROM transactions
-        GROUP BY customer_province
-        ORDER BY total_volume DESC;
-    """)
-
-    rows = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    results = []
-
-    for row in rows:
-        results.append({
-            "province": row["customer_province"],
-            "transactions": row["transactions"],
-            "total_volume": float(row["total_volume"]),
-            "average_amount": round(float(row["average_amount"]), 2)
-        })
-
-    return results
+    except psycopg.Error as exc:
+        raise AnalyticsDatabaseError(
+            "Unable to retrieve fraud analytics."
+        ) from exc
