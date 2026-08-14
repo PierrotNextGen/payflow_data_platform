@@ -1,3 +1,3 @@
 
 
-<img width="1536" height="1024" alt="ChatGPT Image Aug 3, 2026, 04_47_51 AM" src="https://github.com/user-attachments/assets/4f2f390b-8827-41d2-8845-c334ac73ca29" />
+<img width="1536" height="1024" alt="payflow-architecture" src="https://github.com/user-attachments/assets/6770184f-8d04-407a-9c2b-19889cc26ac4" />
