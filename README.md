@@ -1,19 +1,5 @@
 
 
-An end-to-end fintech transaction data platform built to simulate how payment transaction events can be ingested, streamed, transformed, quality-checked, and made available for downstream analytics.
-
-Overview
-
-PayFlow is a portfolio data engineering project built around a realistic financial transaction workflow.
-
-The completed end-to-end implementation demonstrates the movement of transaction data through an event-driven ingestion layer, a lake-style processing architecture, and a PostgreSQL serving layer.
-
-The project currently follows this flow:
-
-FastAPI → Kafka → Bronze → Silver → Gold → PostgreSQL
-
-The API generates transaction events containing customer, merchant, payment, transaction, and fraud-related attributes. Apache Kafka provides the event-streaming layer. Spark processes the data through Bronze and Silver stages before producing business-ready Gold datasets. The Gold datasets are then loaded into PostgreSQL for downstream consumption.
-
 <img width="1024" height="1536" alt="ChatGPT Image Aug 14, 2026, 10_13_43 AM" src="https://github.com/user-attachments/assets/54c581df-aa3c-4ce1-b7c0-4d845e63b3a4" />
 
 What the project demonstrates
